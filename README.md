@@ -35,13 +35,13 @@ After you unpack the shar archives you will have the following files:
 * engine.c
 * engine.S
 * kernel.img
-* sod32.doc
-* extend.4
-* cross.4
-* kernel.4
-* sod32.4
-* doglos.4
-* glosgen.4
+* sod32.txt
+* extend.4th
+* cross.4th
+* kernel.4th
+* sod32.4th
+* doglos.4th
+* glosgen.4th
 
 If your system is big-endian (680x0), then uncomment the -DBIG_ENDIAN flag
 in the Makefile. Check that the UNS8 INT32 and UNS32 types in sod32.h are 
@@ -74,10 +74,10 @@ You can load other files with
 
 S" name" INCLUDED
 
-This way you can load the cross compiler cross.4, which will recompile
+This way you can load the cross compiler cross.4th, which will recompile
 kernel.img You can also load the glossary generator or the sod32 simulator.
 
-S" sod32.4" INCLUDED
+S" sod32.4th" INCLUDED
 SOD32 forth.img
 
 will bring up Forth in a simulator under Forth. It will be slow and you
@@ -110,7 +110,7 @@ justified for the following reasons.
 * the file is machine independent. The same file can be used on every
   machine that can run the SOD 32 simulator.
 * the file in necessary to run SOD 32 Forth. The source for the file is
-  included in the form of cross.4 and kernel.4, but you need to be able
+  included in the form of cross.4th and kernel.4th, but you need to be able
   to run Forth in order to compile kernel.img from it. If I did not 
   include it, you would first need to find a suitable other Forth.
 * As this Forth is more easily portable than most other Forths, having

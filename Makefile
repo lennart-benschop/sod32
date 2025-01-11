@@ -13,14 +13,14 @@ special.o: special.c sod32.h
 
 main.o: main.c sod32.h
 
-forth.img: extend.4 kernel.img 
-	echo 'S" extend.4" INCLUDED '|./sod32 kernel.img 
+forth.img: extend.4th kernel.img 
+	echo 'S" extend.4th" INCLUDED '|./sod32 kernel.img 
 
-kernel.img: kernel.4 cross.4
-	echo 'S" cross.4" INCLUDED '|./sod32 forth.img
+kernel.img: kernel.4th cross.4th
+	echo 'S" cross.4th" INCLUDED '|./sod32 forth.img
 
-forth.glo: kernel.4 extend.4
-	./sod32 forth.img < doglos.4
+forth.glo: kernel.4th extend.4th
+	./sod32 forth.img < doglos.4th
 
 clean:
 	rm sod32 *.o forth.img forth.glo
