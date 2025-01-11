@@ -28,6 +28,8 @@
 \ elementary. Forth words. Therefore they need to be in a wordlist 
 \ different from the normal Forth wordlist.
 
+\ Change 2025-01-11: Fixed to cross compile on 64-bit target.
+
 \ PART 1: THE VOCABULARIES.
 
 \ We need the word VOCABULARY. It's not in the standard though it will
@@ -62,7 +64,7 @@ VOCABULARY TRANSIENT
 
 \ Next we need to define the target space and the words to access it.
 
-100000 CONSTANT IMAGE_SIZE
+20000 CONSTANT IMAGE_SIZE
 
 CREATE IMAGE IMAGE_SIZE CHARS ALLOT \ This space contains the target image.
        IMAGE IMAGE_SIZE 0 FILL      \ Initialize it to zero.
@@ -253,7 +255,7 @@ FORTH DEFINITIONS
 \ The word RESOLVE stores the real address everywhere it is needed.    
 
 : FORWARD  
-  CREATE -1 ,              \ Store head of list in the definition.
+  CREATE $FFFFFFFF ,              \ Store head of list in the definition.
   DOES> CODEFLUSH 
         DUP @ ,-T THERE 1 CELLS-T - SWAP ! \ Reserve a cell in the dictionary
                   \ where the call to the forward definition must come.
@@ -268,7 +270,7 @@ FORTH DEFINITIONS
   TRANSIENT ' >BODY  @                 \ Find the forward ref word in the
                                        \ TRANSIENT VOC and take list head.   
   BEGIN
-   DUP -1 -                            \ Traverse all the links until end.       
+   DUP $FFFFFFFF -                     \ Traverse all the links until end.
   WHILE
    DUP @-T                             \ Take address of next link from dict.
    R@ ROT !-T                           \ Set resolved address in dict.
@@ -300,7 +302,7 @@ FORTH DEFINITIONS
 ;
 
 : >BODY-T ( t-addr1 --- t-addr2 ) \ Convert executing token to param address.
-  1 CELLS + ;
+  1 CELLS-T + ;
 
 \ PART 7: COMPILING WORDS 
 
@@ -314,7 +316,7 @@ TRANSIENT DEFINITIONS FORTH
 
 : BEGIN CODEFLUSH THERE ;
 : UNTIL CODEFLUSH 2 + ,-T ; 
-: IF CODEFLUSH THERE 1 CELLS ALLOT-T ;
+: IF CODEFLUSH THERE 1 CELLS-T ALLOT-T ;
 : THEN CODEFLUSH THERE 2 + SWAP !-T ; TARGET
 : ELSE 28 INSERT-OPCODE [ TRANSIENT ] IF SWAP THEN [ FORTH ] ; 
 : WHILE [ TRANSIENT ] IF [ FORTH ] SWAP ; TARGET
@@ -416,7 +418,7 @@ RESOLVE (POSTPONE)
 
 \ Store appropriate values into some of the new Forth's variables.
 : CELLS>TARGET
-  0 DO OVER I CELLS + @ OVER I CELLS + !-T LOOP 2DROP ;
+  0 DO OVER I CELLS + @ OVER I CELLS-T + !-T LOOP 2DROP ;
 
 #THREADS T' FORTH-WORDLIST >BODY-T !-T
 TLINKS T' FORTH-WORDLIST >BODY-T 4 + #THREADS CELLS>TARGET 
