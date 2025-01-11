@@ -2,14 +2,16 @@
    Copyright 1994 L.C. Benschop, Eindhoven, The Netherlands.
    The program is released under the GNU General Public License version 2.
    There is NO WARRANTY.
+
+   Changes: 2025-01-11: Put parentheses around macro expansion.
 */
 
 #define UNS8  unsigned char
 #define INT32 int
 #define UNS32 unsigned int
 
-#define MEMSIZE 1*1024*1024 /* must be a power of two */
-#define MEMMASK MEMSIZE-1 /* mask for addresses to force them into range */
+#define MEMSIZE (1*1024*1024) /* must be a power of two */
+#define MEMMASK (MEMSIZE-1) /* mask for addresses to force them into range */
 
 extern UNS8 mem[];
 

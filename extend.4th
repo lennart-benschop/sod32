@@ -3,10 +3,17 @@
 \ The program is released under the GNU General Public License version 2.
 \ There is NO WARRANTY.
 
+\ Changes: 2025-01-11: Added ERASE/BLANK, make sure to erase new wordlist.
+\                      Added comments to some words.
+
 : \G POSTPONE \ ; IMMEDIATE
 \G comment till end of line for inclusion in glossary.
 
 \ PART 1: MISCELLANEOUS WORDS.
+
+: ERASE ( c-addr u )
+\G Fill memory region of u bytes starting at c-addr with zero.    
+    0 FILL ;
 
 : COMPARE ( addr1 u1 addr2 u2 --- diff ) 
 \G Compare two strings. diff is negative if addr1 u1 is smaller, 0 if it 
@@ -81,7 +88,7 @@ VARIABLE #THREADS ( --- a-addr)
 
 : WORDLIST ( --- wid)
 \G Make a new wordlist and give its address.
-  HERE #THREADS @ , #THREADS @ CELLS ALLOT ;
+  HERE #THREADS @ , HERE #THREADS @ CELLS DUP ALLOT ERASE ;
 
 : DEFINITIONS  ( --- )
 \G Set the definitions wordlist to the last wordlist in the search order.
@@ -219,9 +226,12 @@ DEFINITIONS
   27 EMIT ." [2J" 0 0 AT-XY ;
 
 : VALUE ( n --- ) 
+\G Create a variable that returns its value when executed, prefix it with TO
+\G to change its value.    
   CREATE , DOES> @ ;
 
 : TO 
+\G Change the value of the following VALUE type word.    
   ' >BODY STATE @ IF
       POSTPONE LITERAL POSTPONE ! 
   ELSE
@@ -229,28 +239,41 @@ DEFINITIONS
   THEN
 ;
 
-: D- ( d1 d2 --- d3) 
-  DNEGATE D+ ; 
+: D- ( d1 d2 --- d3)
+\G subtract double numbers d2 from d1.    
+  DNEGATE D+ ;
 
-: D0= 
+: D0= ( d ---f)
+\G f is true if and only if d is equal to zero.    
   OR 0= ;
 
-: D= 
+: D= ( d1 d1  --- f)
+\G f is true if and only if d1 and d2 are equal.
   D- D0= ;
 
-: BLANK 
+: BLANK ( c-addr u ----)
+\G Fill the memory region of u bytes starting at c-addr with spaces.
   32 FILL ;
 
-: AGAIN 
+
+: AGAIN ( x ---)
+\G Terminate a loop forever BEGIN..AGAIN loop.
   POSTPONE 0 POSTPONE UNTIL ; IMMEDIATE
 
-: CASE 
+: CASE ( --- )
+\G Start a CASE..ENDCASE construct. Inside are one or more OF..ENDOF blocks.
+\G runtime the CASE blocks takes one value from the stack and uses it to
+\G select one OF..ENDOF block.
   CSP @ SP@ CSP ! ; IMMEDIATE
-: OF 
+: OF ( --- x)
+\G Start an OF..ENDOF block. At runtime it pops a value from the stack and
+\G executes the block if this value is equal to the CASE value.
   POSTPONE OVER POSTPONE = POSTPONE IF POSTPONE DROP ; IMMEDIATE
-: ENDOF 
+: ENDOF ( x1 --- x2)
+\G Terminate an OF..ENDOF block.
   POSTPONE ELSE ; IMMEDIATE
-: ENDCASE 
+: ENDCASE ( variable# ---)
+\G Terminate a CASE..ENDCASE construct.
   POSTPONE DROP BEGIN SP@ CSP @ - WHILE POSTPONE THEN REPEAT
   CSP ! ; IMMEDIATE
 

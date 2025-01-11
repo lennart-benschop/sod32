@@ -9,6 +9,8 @@
 \ Lines starting with \G are comments that are included in the glossary.
 
 \ All of the file after the next line is cross compiled.
+
+\ Change 2025-01-11: FIxed DEPTH.
 CROSS-COMPILE
 
 \ PART 0: BOOT VECTORS. 
