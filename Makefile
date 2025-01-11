@@ -13,10 +13,6 @@ special.o: special.c sod32.h
 
 main.o: main.c sod32.h
 
-asm386: engine.S
-	$(CC) -c engine.S;\
-	make 
-
 forth.img: extend.4 kernel.img 
 	echo 'S" extend.4" INCLUDED '|./sod32 kernel.img 
 
@@ -26,8 +22,5 @@ kernel.img: kernel.4 cross.4
 forth.glo: kernel.4 extend.4
 	./sod32 forth.img < doglos.4
 
-zip: 
-	rm -i sod.zip;\
-	zip sod special.c engine.c engine.S main.c kernel.img\
-        kernel.4 cross.4 extend.4 Makefile sod32.h sod32.4 README\
-        glosgen.4 doglos.4 sod32.doc term.c tetris.4
+clean:
+	rm sod32 *.o forth.img forth.glo
