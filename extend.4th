@@ -44,6 +44,10 @@ M: 0<= ( n1 --- f)
 \G f is true if and only if n1 is less than zero.
   0 <= ;
 
+M: 0<> ( n1 n2 ---f)
+\G f is true of and only of n1 and n2 are not equal.   
+  0= 0= ;
+
 M: BOUNDS ( addr1 n --- addr2 addr1)
 \G Convert address and length to two bounds addresses for DO LOOP 
   OVER + SWAP ;
@@ -64,6 +68,14 @@ M: BOUNDS ( addr1 n --- addr2 addr1)
 M: NIP ( x1 x2 --- x2)
 \G Discard the second item on the stack.
   SWAP DROP ;
+
+M: TUCK ( x1 x2 --- x2 x1 x2 )
+\G Copy the top of stack to a position under the second item.  
+    SWAP OVER ;
+
+: .(  ( "ccc<rparen>" ---)
+\G Print the string up to the next right parenthesis.
+   41 PARSE TYPE ;
 
 \ PART 2: SEARCH ORDER WORDLIST
 
@@ -116,6 +128,48 @@ CONSTANT ROOT-WORDLIST ( --- wid )
   DOES> >R                      \ Replace last item in the search order.
   GET-ORDER SWAP DROP R> @ SWAP SET-ORDER ;
 
+: ENVIRONMENT? ( c-addr u --- false | val true)
+\G Return an environmental query of the string c-addr u    
+    2DROP 0 ;
+
+\ Part 2A: Conditional compilation
+
+: [IF] ( f ---)
+\G If the flag is false, conditionally skip till the next [ELSE] or [ENDIF]
+    0= IF
+	BEGIN 
+	    BEGIN
+		BL WORD UPPERCASE? COUNT
+		DUP WHILE
+		    2DUP S" [ELSE]" COMPARE 0= IF
+			2DROP NESTING @ 0= IF EXIT THEN
+		    ELSE
+			2DUP S" [THEN]" COMPARE 0= IF
+			    2DROP NESTING @ 0= IF EXIT ELSE -1 NESTING +! THEN
+			ELSE
+			    S" [IF]" COMPARE 0= IF
+				1 NESTING +!
+			    THEN
+			THEN
+		    THEN	    
+	    REPEAT
+	    2DROP REFILL 0=
+	UNTIL
+	NESTING OFF
+    THEN	
+; IMMEDIATE
+
+: [ELSE] ( --- )
+    0 POSTPONE [IF] ; IMMEDIATE
+\G Used in [IF] [ELSE] [THEN] for conditional compilation.    
+
+: [THEN] ( --- )
+\G Terminate [IF] [THEN] does nothing.
+    ; IMMEDIATE
+
+: [DEFINED] ( "ccc" --- f)
+\G Produce a flag indicating whether the next word is defined.	
+    BL WORD UPPERCASE? FIND SWAP DROP 0<> ; IMMEDIATE
 
 \ PART 3: SOME UTILITIES, DUMP .S WORDS
  

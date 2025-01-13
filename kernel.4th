@@ -1584,9 +1584,13 @@ VARIABLE ERRORS ( --- a-addr)
      HERE COUNT TYPE CR WARM
 ;  
 
+VARIABLE NESTING
+\G Variable to hold nesting for conditional compilation.
+
 : QUIT ( --- )
 \G This word resets the return stack, resets the compiler state, the include
 \G buffer and then it reads and interprets terminal input.
+  NESTING OFF    
   R0 @ RP! [
   TIB SRC ! 0 SID !
   INCLUDE-BUFFER INCLUDE-POINTER !  
@@ -1625,7 +1629,8 @@ VARIABLE ERRORS ( --- a-addr)
 \G The first word that is called at the start of Forth.
   SP@ S0 !
   RP@ 4 + R0 ! \ Initialize variables SO and RO 
-  ." Welcome to Forth " CR 
+  ." Welcome to SOD32 Forth version 0.5" CR
+  ." Copyright 2025 L.C. Benschop GPLv2" CR
   WARM ;
 
 END-CROSS
