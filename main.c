@@ -5,13 +5,14 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "sod32.h"
 
 UNS8 mem[MEMSIZE+3];
 
 UNS32 save_sp,save_ip,save_rp,interrupt;
 
-load_image(char *name)
+void load_image(char *name)
 {
  UNS32 len;
  FILE *infile;
@@ -25,7 +26,7 @@ load_image(char *name)
  
 
 
-main(int argc,char **argv)
+int main(int argc,char **argv)
 {
  if(argc<2) {
   fprintf(stderr,"Usage: sod32 <filename>\n");
