@@ -111,7 +111,11 @@ int getch(void)
   } 
   c=keybuf;keybuf=EOF;
   return c; 
- } else return getchar();
+ } else {
+   c=getchar();
+   if (c==EOF) exit(3);
+   return c;
+ }
 }
 
 int kbhit(void)
