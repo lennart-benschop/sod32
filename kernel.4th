@@ -1352,40 +1352,45 @@ VARIABLE 'LEAVE ( --- a-addr)
 \ branch instruction (bit 1 is set). Unconditional branch is made by
 \ opcode 28 (constant 0) and conditional branch.
 
-: BEGIN ( --- x )
-\G Start a BEGIN UNTIL or BEGIN WHILE REPEAT loop.
-  CODEFLUSH HERE ; IMMEDIATE
+: ?PAIRS ( n1 n2 ---)
+\G Check that n1 matches n2, throw an error if not, used to check
+\G correct pairing of control structures.
+    - -22 ?THROW ;
 
-: UNTIL ( x --- )
+: BEGIN ( --- x n)
+\G Start a BEGIN UNTIL or BEGIN WHILE REPEAT loop.
+  CODEFLUSH HERE 01 ; IMMEDIATE
+
+: UNTIL ( x n --- )
 \G Form a loop with matching BEGIN. 
 \G Runtime: A flag is take from the stack
 \G each time UNTIL is encountered and the loop iterates until it is nonzero. 
-  CODEFLUSH 02 + , ; IMMEDIATE 
+  01 ?PAIRS CODEFLUSH 02 + , ; IMMEDIATE 
 
-: IF    ( --- x)
+: IF    ( --- x n)
 \G Start an IF THEN or IF ELSE THEN construction. 
 \G Runtime: At IF a flag is taken from
 \G the stack and if it is true the part between IF and ELSE is executed,
 \G otherwise the part between ELSE and THEN. If there is no ELSE, the part
 \G between IF and THEN is executed only if flag is true.
-  CODEFLUSH HERE 1 CELLS ALLOT ; IMMEDIATE
+  CODEFLUSH HERE 1 CELLS ALLOT 02 ; IMMEDIATE
 
-: THEN ( x ---)
+: THEN ( x n ---)
 \G End an IF THEN or IF ELSE THEN construction.
-  CODEFLUSH HERE 02 + SWAP ! ; IMMEDIATE
+  02 ?PAIRS CODEFLUSH HERE 02 + SWAP ! ; IMMEDIATE
 
-: ELSE ( x1 --- x2)
+: ELSE ( x1 n2 --- x2 n2)
 \G part of IF ELSE THEN construction.
-  28 INSERT-OPCODE POSTPONE IF SWAP POSTPONE THEN ; IMMEDIATE 
+  28 INSERT-OPCODE POSTPONE IF 2SWAP POSTPONE THEN ; IMMEDIATE 
 
 : WHILE  ( x1 --- x2 x1 )
 \G part of BEGIN WHILE REPEAT construction.
 \G Runtime: At WHILE a flag is taken from the stack. If it is false,
 \G  the program jumps out of the loop, otherwise the part between WHILE
 \G  and REPEAT is executed and the loop iterates to BEGIN.
-  POSTPONE IF SWAP ; IMMEDIATE
+  POSTPONE IF 2SWAP ; IMMEDIATE
 
-: REPEAT ( x1 x2 --- )
+: REPEAT ( x1 n1 x2 n2 --- )
 \G part of BEGIN WHILE REPEAT construction.
   28 INSERT-OPCODE POSTPONE UNTIL POSTPONE THEN ; IMMEDIATE
 
@@ -1409,17 +1414,17 @@ VARIABLE POCKET ( --- a-addr )
 \G Compile the first character of "ccc" as a literal.
   CHAR LITERAL ; IMMEDIATE
 
-: DO ( --- x)
+: DO ( --- x n)
 \G Start a DO LOOP.
 \G Runtime: ( n1 n2 --- ) start a loop with initial count n2 and 
 \G limit n1.
-  POSTPONE (DO) 'LEAVE @ HERE 0 'LEAVE ! ; IMMEDIATE
+  POSTPONE (DO) 'LEAVE @ HERE 0 'LEAVE ! 03 ; IMMEDIATE
 
-: ?DO ( --- x )
+: ?DO ( --- x n)
 \G Start a ?DO LOOP.
 \G Runtime: ( n1 n2 --- ) start a loop with initial count n2 and
 \G limit n1. Exit immediately if n1 = n2.  
-  POSTPONE (?DO) 'LEAVE @ HERE 'LEAVE ! 0 , HERE ; IMMEDIATE
+  POSTPONE (?DO) 'LEAVE @ HERE 'LEAVE ! 0 , HERE 03 ; IMMEDIATE
 
 : LEAVE ( --- )
 \G Runtime: leave the matching DO LOOP immediately.
@@ -1433,16 +1438,16 @@ VARIABLE POCKET ( --- a-addr )
           'LEAVE @ 
           BEGIN DUP WHILE DUP @ HERE ROT ! REPEAT DROP ; 
 
-: LOOP  ( x --- )
+: LOOP  ( x n--- )
 \G End a DO LOOP.
 \G Runtime: Add 1 to the count and if it is equal to the limit leave the loop.
-  POSTPONE (LOOP) , RESOLVE-LEAVE 'LEAVE ! ; IMMEDIATE
+  3 ?PAIRS POSTPONE (LOOP) , RESOLVE-LEAVE 'LEAVE ! ; IMMEDIATE
 
-: +LOOP ( x --- )
+: +LOOP ( x n--- )
 \G End a DO +LOOP 
 \G Runtime: ( n ---) Add n to the count and exit if this crosses the 
 \G boundary between limit-1 and limit. 
-  POSTPONE (+LOOP) , RESOLVE-LEAVE 'LEAVE ! ; IMMEDIATE
+  3 ?PAIRS POSTPONE (+LOOP) , RESOLVE-LEAVE 'LEAVE ! ; IMMEDIATE
 
 : RECURSE ( --- )
 \G Compile a call to the current (not yet finished) definition.
@@ -1629,7 +1634,7 @@ VARIABLE NESTING
 \G The first word that is called at the start of Forth.
   SP@ S0 !
   RP@ 4 + R0 ! \ Initialize variables SO and RO 
-  ." Welcome to SOD32 Forth version 0.5" CR
+  ." Welcome to SOD32 Forth version 0.6" CR
   ." Copyright 2025 L.C. Benschop GPLv2" CR
   WARM ;
 
