@@ -1,5 +1,5 @@
 \ This is the file kernel.4, included by the cross compiler.
-\ Copyright 1994 L.C. Benschop Eindhoven, The Netherlands.
+\ Copyright 1994 L.C. Benschop Vught, The Netherlands.
 \ The program is released under the GNU General Public License version 2.
 \ There is NO WARRANTY.
 

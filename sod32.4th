@@ -1,5 +1,5 @@
 \ SOFTWARE SIMULATOR FOR SOD-32, THE STACK ORIENTED DESIGN PROCESSOR 
-\ Copyright 1994 L.C. Benschop Eindhoven, The Netherlands.
+\ Copyright 1994 L.C. Benschop Vught, The Netherlands.
 \ The program is released under the GNU General Public License version 2.
 \ There is NO WARRANTY.
 \ 

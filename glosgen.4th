@@ -1,6 +1,6 @@
 \ Glossary generator.
 \ Written in ANS Forth, requires FILES wordset.
-\ Copyright (c)1993 L.C. Benschop Eindhoven.
+\ Copyright (c)1993 L.C. Benschop Vught.
 \ Permission to copy, distribute or modify this program is granted under the
 \ conditions of the General Public Licence version 2.
 

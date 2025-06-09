@@ -1,5 +1,5 @@
 /* SOD32 the Stack Oriented Design computer.
-   Copyright 1994 L.C. Benschop, Eindhoven, The Netherlands.
+   Copyright 1994 L.C. Benschop, Vught, The Netherlands.
    The program is released under the GNU General Public License version 2.
    There is NO WARRANTY.
 
